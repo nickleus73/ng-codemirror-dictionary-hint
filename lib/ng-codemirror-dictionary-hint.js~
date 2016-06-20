@@ -26,9 +26,6 @@ if (isCommonJS()) {
 function directive($parse, $timeout) {
   return {
     restrict: 'A',
-    scope: {
-        ngCodemirrorDictionaryHint: '='
-    },
     priority: 2, // higher than ui-codemirror which is 1.
     compile: function compile() {
 
@@ -59,8 +56,8 @@ function directive($parse, $timeout) {
         }
 
         if (iAttrs.ngCodemirrorDictionaryHint) {
-          scope.$watch('ngCodemirrorDictionaryHint', function() {
-              dictionary = scope.ngCodemirrorDictionaryHint;
+          scope.$watch('iAttrs.ngCodemirrorDictionaryHint', function() {
+              dictionary = $parse(iAttrs.ngCodemirrorDictionaryHint)(scope);
               if (!angular.isArray(dictionary)) {
                 throw new Error('ng-codemirror-dictionary-hint must be a list.');
               }
@@ -68,7 +65,7 @@ function directive($parse, $timeout) {
         }
 
         // The ui-codemirror directive allows us to receive a reference to the Codemirror instance on demand.
-	scope.$emit('CodeMirror', function(cm) {
+        scope.$broadcast('CodeMirror', function(cm) {
           cm.on('change', function(instance, change) {
             if (change.origin !== 'complete') {
               instance.showHint({ hint: CodeMirror.hint.dictionaryHint, completeSingle: false });
